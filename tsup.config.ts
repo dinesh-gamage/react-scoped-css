@@ -11,7 +11,7 @@ export default defineConfig({
         'cli/init': 'src/cli/init.ts',
     },
     format: ['esm', 'cjs'],
-    dts: true,
+    dts: { tsconfig: './tsconfig.build.json' },
     clean: true,
     sourcemap: true,
     splitting: false,
