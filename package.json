@@ -1,0 +1,99 @@
+{
+  "name": "react-scoped-css",
+  "version": "2.0.0",
+  "description": "Zero-code-change CSS scoping for React — no className renames, no new syntax",
+  "license": "MIT",
+  "author": "dinesh-gamage",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dinesh-gamage/react-scoped-css.git"
+  },
+  "keywords": [
+    "react",
+    "css",
+    "scoped css",
+    "babel plugin",
+    "postcss plugin",
+    "css modules",
+    "scoped styles",
+    "vite",
+    "webpack",
+    "nextjs"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./babel": {
+      "import": "./dist/babel/index.js",
+      "require": "./dist/babel/index.cjs",
+      "types": "./dist/babel/index.d.ts"
+    },
+    "./postcss": {
+      "import": "./dist/postcss/index.js",
+      "require": "./dist/postcss/index.cjs",
+      "types": "./dist/postcss/index.d.ts"
+    },
+    "./vite": {
+      "import": "./dist/adapters/vite.js",
+      "require": "./dist/adapters/vite.cjs",
+      "types": "./dist/adapters/vite.d.ts"
+    },
+    "./next": {
+      "import": "./dist/adapters/next.js",
+      "require": "./dist/adapters/next.cjs",
+      "types": "./dist/adapters/next.d.ts"
+    },
+    "./webpack": {
+      "import": "./dist/adapters/webpack.js",
+      "require": "./dist/adapters/webpack.cjs",
+      "types": "./dist/adapters/webpack.d.ts"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "react-scoped-css": "./dist/cli/init.js"
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "build:watch": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "tsc --noEmit",
+    "prepublishOnly": "npm run lint && npm run test && npm run build"
+  },
+  "dependencies": {
+    "find-up": "^7.0.0",
+    "postcss-scss": "^4.0.9"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.0",
+    "@babel/parser": "^7.24.0",
+    "@babel/traverse": "^7.24.0",
+    "@babel/types": "^7.24.0",
+    "@babel/generator": "^7.24.0",
+    "@types/babel__core": "^7.20.5",
+    "@types/babel__traverse": "^7.20.5",
+    "@types/node": "^20.0.0",
+    "postcss": "^8.4.38",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^1.4.0"
+  },
+  "peerDependencies": {
+    "@babel/core": ">=7.0.0",
+    "postcss": ">=8.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@babel/core": { "optional": true },
+    "postcss": { "optional": true }
+  }
+}
