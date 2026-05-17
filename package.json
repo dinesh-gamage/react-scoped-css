@@ -22,37 +22,37 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./babel": {
-      "import": "./dist/babel/index.js",
-      "require": "./dist/babel/index.cjs",
+      "import": "./dist/babel/index.mjs",
+      "require": "./dist/babel/index.js",
       "types": "./dist/babel/index.d.ts"
     },
     "./postcss": {
-      "import": "./dist/postcss/index.js",
-      "require": "./dist/postcss/index.cjs",
+      "import": "./dist/postcss/index.mjs",
+      "require": "./dist/postcss/index.js",
       "types": "./dist/postcss/index.d.ts"
     },
     "./vite": {
-      "import": "./dist/adapters/vite.js",
-      "require": "./dist/adapters/vite.cjs",
+      "import": "./dist/adapters/vite.mjs",
+      "require": "./dist/adapters/vite.js",
       "types": "./dist/adapters/vite.d.ts"
     },
     "./next": {
-      "import": "./dist/adapters/next.js",
-      "require": "./dist/adapters/next.cjs",
+      "import": "./dist/adapters/next.mjs",
+      "require": "./dist/adapters/next.js",
       "types": "./dist/adapters/next.d.ts"
     },
     "./webpack": {
-      "import": "./dist/adapters/webpack.js",
-      "require": "./dist/adapters/webpack.cjs",
+      "import": "./dist/adapters/webpack.mjs",
+      "require": "./dist/adapters/webpack.js",
       "types": "./dist/adapters/webpack.d.ts"
     }
   },
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
@@ -71,15 +71,14 @@
     "prepublishOnly": "npm run lint && npm run test && npm run build"
   },
   "dependencies": {
-    "find-up": "^7.0.0",
     "postcss-scss": "^4.0.9"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
+    "@babel/generator": "^7.24.0",
     "@babel/parser": "^7.24.0",
     "@babel/traverse": "^7.24.0",
     "@babel/types": "^7.24.0",
-    "@babel/generator": "^7.24.0",
     "@types/babel__core": "^7.20.5",
     "@types/babel__traverse": "^7.20.5",
     "@types/node": "^20.0.0",
@@ -93,7 +92,11 @@
     "postcss": ">=8.0.0"
   },
   "peerDependenciesMeta": {
-    "@babel/core": { "optional": true },
-    "postcss": { "optional": true }
+    "@babel/core": {
+      "optional": true
+    },
+    "postcss": {
+      "optional": true
+    }
   }
 }

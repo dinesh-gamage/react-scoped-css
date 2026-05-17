@@ -31,6 +31,13 @@ describe('generateHash', () => {
         expect(a).not.toBe(b);
     });
 
+    it('same hash for same stem with different extensions (Card.tsx vs Card.scss)', () => {
+        const dir = path.join(__dirname, 'fixtures');
+        const tsx = generateHash(path.join(dir, 'Card.tsx'), 'app');
+        const scss = generateHash(path.join(dir, 'Card.scss'), 'app');
+        expect(tsx).toBe(scss);
+    });
+
     it('is machine-agnostic: hash is based on relative path', () => {
         // Two paths that differ only in the absolute prefix should produce
         // the same hash as long as they share the same relative path from

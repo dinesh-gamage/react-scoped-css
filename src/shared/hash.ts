@@ -1,12 +1,24 @@
 import { createHash } from 'crypto';
+import fs from 'fs';
 import path from 'path';
-import { findUpSync } from 'find-up';
+
+/** Walk up from `dir` looking for `filename`. Returns the first match or undefined. */
+function findUpSync(filename: string, startDir: string): string | undefined {
+    let dir = startDir;
+    while (true) {
+        const candidate = path.join(dir, filename);
+        if (fs.existsSync(candidate)) return candidate;
+        const parent = path.dirname(dir);
+        if (parent === dir) return undefined; // reached filesystem root
+        dir = parent;
+    }
+}
 
 function readPackageNameSync(pkgJsonPath: string | undefined): string {
     if (!pkgJsonPath) return '';
     try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const pkg = require(pkgJsonPath) as { name?: string };
+        const raw = fs.readFileSync(pkgJsonPath, 'utf8');
+        const pkg = JSON.parse(raw) as { name?: string };
         return typeof pkg.name === 'string' ? pkg.name : '';
     } catch {
         return '';
@@ -31,11 +43,11 @@ export function generateHash(
     salt?: string,
     hashLength = 8,
 ): string {
-    const pkgJsonPath = findUpSync('package.json', {
-        cwd: path.dirname(absoluteFilePath),
-    });
+    const pkgJsonPath = findUpSync('package.json', path.dirname(absoluteFilePath));
     const projectRoot = pkgJsonPath ? path.dirname(pkgJsonPath) : process.cwd();
-    const relativeFilePath = path.relative(projectRoot, absoluteFilePath);
+    // Strip extension so Card.tsx and Card.scss produce the same hash.
+    // A component's scope identity is its path without extension.
+    const relativeFilePath = path.relative(projectRoot, absoluteFilePath).replace(/\.[^./\\]+$/, '');
 
     const effectiveSalt = salt ?? readPackageNameSync(pkgJsonPath);
 

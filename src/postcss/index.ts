@@ -1,7 +1,11 @@
-import type { PluginCreator } from 'postcss';
+import type { PluginCreator, Syntax } from 'postcss';
 import { generateHash } from '../shared/hash';
 import { isExcluded } from '../shared/exclude';
 import type { ScopedCssOptions } from '../shared/options';
+
+// postcss-scss is a bundled dependency — use it automatically for .scss/.sass files
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const scssSyntax: Syntax = require('postcss-scss');
 
 // Matches a CSS class selector token: .foo, .foo-bar, ._private, etc.
 // Captures the class name without the leading dot.
@@ -30,6 +34,12 @@ const plugin: PluginCreator<ScopedCssOptions> = (opts: ScopedCssOptions = {}) =>
             // Skip CSS Modules files — they are already scoped.
             if (!filePath || filePath.includes('.module.')) {
                 return {};
+            }
+
+            // Apply SCSS syntax automatically for .scss/.sass files.
+            // This allows users to run postcss-loader without a separate syntax config.
+            if (/\.s[ac]ss$/i.test(filePath) && !result.opts.syntax) {
+                result.opts.syntax = scssSyntax;
             }
 
             const hash = generateHash(filePath, salt, hashLength);
