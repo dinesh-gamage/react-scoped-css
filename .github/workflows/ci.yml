@@ -63,7 +63,7 @@ jobs:
       - name: Check if version already published
         id: check
         run: |
-          if npm view react-scoped-css@${{ steps.pkg.outputs.version }} version 2>/dev/null; then
+          if npm view @dinesh-gamage/react-scoped-css@${{ steps.pkg.outputs.version }} version 2>/dev/null; then
             echo "already_published=true" >> "$GITHUB_OUTPUT"
           else
             echo "already_published=false" >> "$GITHUB_OUTPUT"
