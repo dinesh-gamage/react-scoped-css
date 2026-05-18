@@ -32,6 +32,20 @@ The hash is derived from the file path — same hash in JSX and CSS, unique per 
 
 ---
 
+## Overview
+
+react-scoped-css is a build-time CSS scoping tool for React. It has two parts that work together:
+
+**Babel plugin** — transforms every `className` JSX attribute at compile time, appending a per-file hash to each class name token. Static strings are rewritten inline (zero runtime cost). Dynamic expressions are wrapped with a small `scopeClass()` runtime helper, imported automatically only in files that need it.
+
+**PostCSS plugin** — transforms every CSS/SCSS class selector at build time, appending the same per-file hash. SCSS syntax is handled automatically (no extra config). Files matching `*.module.*` are skipped.
+
+Both plugins derive the hash the same way: `MD5(relativeFilePath + salt).slice(0, 8)`, where the file extension is stripped so `Card.tsx` and `Card.scss` always produce the same hash. The path is relative to the project root (nearest `package.json`), so the hash is identical on every machine and in CI. The salt defaults to the `name` field in `package.json`, making hashes globally unique across apps in the same monorepo or deployment without any extra configuration.
+
+The result: `.container` in `Card.tsx` and `.container` in `UserProfile.tsx` each get different hashes, ending up as `.container-a3f9b2c1` and `.container-b4c8d1e2` — the same code, zero collisions, zero code changes from the developer.
+
+---
+
 ## Why not CSS Modules or CSS-in-JS?
 
 Every existing solution requires you to change how you write code:
@@ -256,6 +270,85 @@ For most React codebases this is not an issue.
 **Third-party components that accept `className`** — A library component that uses your scoped class name internally (not just forwards it to a DOM element) may not match your CSS. The `exclude` list handles top-level library class names. Internal library classes are unaffected.
 
 **React compiler (experimental)** — Untested with the React 19 compiler. The Babel plugin runs before the React compiler in the standard pipeline, but verify in your specific setup.
+
+---
+
+## Contributing
+
+Contributions are welcome. Here is what the project needs most:
+
+- **e2e tests** — full build integration tests for Vite and webpack (`tests/e2e/`) — currently empty
+- **Less support** — `postcss-less` is not yet bundled; `.less` files are not auto-detected in the PostCSS plugin
+- **React 19 / React compiler verification** — the Babel plugin is untested with the React compiler; someone with a React 19 + compiler project should validate it
+- **Rollup adapter** — `src/adapters/rollup.ts` following the same pattern as the Vite adapter
+- **Nested `classNames()` inside template literals** — known limitation, see [Known limitations](#known-limitations)
+- **Bug reports with minimal reproductions** — open an issue with the smallest possible code that shows the problem
+
+### Setup
+
+```bash
+git clone https://github.com/dinesh-gamage/react-scoped-css
+cd react-scoped-css
+npm install
+npm test        # 38 tests, should all pass
+npm run build   # builds dist/
+```
+
+### Project structure
+
+```
+src/
+  babel/index.ts       JSX className transform — all 9 patterns, AST-based
+  postcss/index.ts     CSS class selector transform, SCSS auto-detected
+  cli/init.ts          npx react-scoped-css init — detect bundler, print snippet
+  adapters/
+    vite.ts            Vite plugin (wires up both automatically)
+    next.ts            Next.js withScopedCss() wrapper
+    webpack.ts         webpack {babelPlugin, postcssPlugin} helper
+  shared/
+    hash.ts            MD5(relPathWithoutExt + salt).slice(0,8)
+    exclude.ts         prefix-based exclusion check
+    options.ts         ScopedCssOptions interface
+  classNames.ts        scopeClass() runtime helper
+  index.ts             package root export
+
+tests/
+  shared/              hash and exclude unit tests
+  babel/               Babel plugin tests — one per className pattern
+  postcss/             PostCSS plugin tests
+  e2e/                 (empty — needs full Vite/webpack integration tests)
+```
+
+### Key design decisions
+
+**Hash = `MD5(relPathWithoutExt + salt)`** — extension is stripped so `Card.tsx` and `Card.scss` produce the same hash. Without this, the Babel plugin (processing `.tsx`) and the PostCSS plugin (processing `.scss`) would generate different hashes for the same component.
+
+**Babel over regex** — className transformation uses Babel AST, not regex. This is correct for all edge cases (template literals, ternaries, variables, classNames() calls) where regex silently produces wrong output.
+
+**PostCSS over string replacement** — CSS transformation uses PostCSS rule walking, not string replacement. Handles nested SCSS, multi-selector rules, and pseudo-classes correctly.
+
+**`scopeClass()` import injected per-file** — the runtime helper is only imported in files that contain dynamic className expressions. Static-only files get no import, no runtime cost.
+
+**`exclude` is prefix-based** — any class starting with an excluded prefix is left completely unchanged in both JSX and CSS. Intended for component library overrides (e.g. `uxp-`, `mantine-`).
+
+### Adding a new adapter
+
+Follow the pattern in `src/adapters/vite.ts`:
+
+1. Import `scopedCssPostcss` from `../postcss/index` and `reactScopedCssBabelPlugin` from `../babel/index`
+2. Wire up both plugins for the target bundler
+3. Export a named function with the bundler's conventional API shape
+4. Add the entry to `tsup.config.ts` and `package.json` exports
+
+### Submitting a PR
+
+- Keep PRs focused — one concern per PR
+- Add or update tests for any behaviour change
+- `npm test` must pass with no failures
+- `npm run build` must succeed with no type errors (`tsc --noEmit`)
+- For bug fixes: include a test that fails before your fix and passes after
+
+Open an issue first for anything large (new adapters, new configuration options, behaviour changes) so we can agree on the approach before you write the code.
 
 ---
 
