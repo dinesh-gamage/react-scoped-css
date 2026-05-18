@@ -22,34 +22,34 @@
   ],
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     },
     "./babel": {
+      "types": "./dist/babel/index.d.ts",
       "import": "./dist/babel/index.mjs",
-      "require": "./dist/babel/index.js",
-      "types": "./dist/babel/index.d.ts"
+      "require": "./dist/babel/index.js"
     },
     "./postcss": {
+      "types": "./dist/postcss/index.d.ts",
       "import": "./dist/postcss/index.mjs",
-      "require": "./dist/postcss/index.js",
-      "types": "./dist/postcss/index.d.ts"
+      "require": "./dist/postcss/index.js"
     },
     "./vite": {
+      "types": "./dist/adapters/vite.d.ts",
       "import": "./dist/adapters/vite.mjs",
-      "require": "./dist/adapters/vite.js",
-      "types": "./dist/adapters/vite.d.ts"
+      "require": "./dist/adapters/vite.js"
     },
     "./next": {
+      "types": "./dist/adapters/next.d.ts",
       "import": "./dist/adapters/next.mjs",
-      "require": "./dist/adapters/next.js",
-      "types": "./dist/adapters/next.d.ts"
+      "require": "./dist/adapters/next.js"
     },
     "./webpack": {
+      "types": "./dist/adapters/webpack.d.ts",
       "import": "./dist/adapters/webpack.mjs",
-      "require": "./dist/adapters/webpack.js",
-      "types": "./dist/adapters/webpack.d.ts"
+      "require": "./dist/adapters/webpack.js"
     }
   },
   "main": "./dist/index.js",
