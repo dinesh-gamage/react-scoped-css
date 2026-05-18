@@ -1,4 +1,4 @@
-# react-scoped-css — Claude context
+# @dinesh-gamage/react-scoped-css — Claude context
 
 Read this file at the start of every session. It contains enough context to continue work without asking the developer for background.
 
@@ -8,7 +8,7 @@ Read this file at the start of every session. It contains enough context to cont
 
 A build-time CSS scoping library for React. The core differentiator: **zero code changes**. Developers write `className="container"` and `.container {}` exactly as they always have. The build tools append a per-file hash at compile time so class names never collide across components.
 
-Package name on npm: `react-scoped-css` (v2, clean slate — the old package `react-scoped-css-loader` is v1 and stays on npm unchanged).
+Package name on npm: `@dinesh-gamage/react-scoped-css` (v2, clean slate — the old package `react-scoped-css-loader` is v1 and stays on npm unchanged).
 
 ---
 
@@ -30,7 +30,7 @@ src/
   adapters/next.ts      withScopedCss() Next.js config wrapper
   adapters/webpack.ts   scopedCssWebpack() → { babelPlugin, postcssPlugin }
 
-  cli/init.ts           npx react-scoped-css init — detects bundler, prints snippet
+  cli/init.ts           npx @dinesh-gamage/react-scoped-css init — detects bundler, prints snippet
   index.ts              root export: { scopeClass, ScopedCssOptions }
 ```
 
@@ -136,7 +136,7 @@ cd ~/personal/projects/react-scoped-css
 npm run build
 npm link
 cd ~/Downloads/temp/test-app
-npm link react-scoped-css
+npm link @dinesh-gamage/react-scoped-css
 ```
 
 ---

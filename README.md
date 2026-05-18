@@ -63,13 +63,13 @@ This tool requires no changes. Add it to your build config once, and existing co
 ## Install
 
 ```bash
-npm install react-scoped-css
+npm install @dinesh-gamage/react-scoped-css
 ```
 
 Then run the init command to get the config snippet for your bundler:
 
 ```bash
-npx react-scoped-css init
+npx @dinesh-gamage/react-scoped-css init
 ```
 
 ---
@@ -82,7 +82,7 @@ npx react-scoped-css init
 // vite.config.ts
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { scopedCss } from 'react-scoped-css/vite';
+import { scopedCss } from '@dinesh-gamage/react-scoped-css/vite';
 
 export default defineConfig({
   plugins: [
@@ -96,7 +96,7 @@ export default defineConfig({
 
 ```js
 // next.config.js
-const { withScopedCss } = require('react-scoped-css/next');
+const { withScopedCss } = require('@dinesh-gamage/react-scoped-css/next');
 
 module.exports = withScopedCss({
   exclude: ['global-'],
@@ -109,7 +109,7 @@ module.exports = withScopedCss({
 
 ```js
 // webpack.config.js
-const { scopedCssWebpack } = require('react-scoped-css/webpack');
+const { scopedCssWebpack } = require('@dinesh-gamage/react-scoped-css/webpack');
 const { babelPlugin, postcssPlugin } = scopedCssWebpack({
   exclude: ['global-'],
 });
@@ -152,7 +152,7 @@ If you configure Babel and PostCSS yourself:
 
 ```js
 // babel.config.js
-const { default: scopedCssBabel } = require('react-scoped-css/babel');
+const { default: scopedCssBabel } = require('@dinesh-gamage/react-scoped-css/babel');
 
 module.exports = {
   plugins: [
@@ -163,7 +163,7 @@ module.exports = {
 
 ```js
 // postcss.config.js
-const { scopedCssPostcss } = require('react-scoped-css/postcss');
+const { scopedCssPostcss } = require('@dinesh-gamage/react-scoped-css/postcss');
 
 module.exports = {
   plugins: [
@@ -232,7 +232,7 @@ interface ScopedCssOptions {
 
 ## How it works
 
-**Babel plugin** (`react-scoped-css/babel`) — visits every `className` JSX attribute and appends `-{hash}` to each class name token at compile time. Handles all real-world patterns:
+**Babel plugin** (`@dinesh-gamage/react-scoped-css/babel`) — visits every `className` JSX attribute and appends `-{hash}` to each class name token at compile time. Handles all real-world patterns:
 
 | Pattern | Input | Output |
 |---|---|---|
@@ -248,7 +248,7 @@ interface ScopedCssOptions {
 
 Static string literals are transformed entirely at compile time — no runtime cost, no import added. Dynamic expressions use `scopeClass()`, a small runtime helper that is imported automatically only in files that need it.
 
-**PostCSS plugin** (`react-scoped-css/postcss`) — walks every CSS rule selector and appends `-{hash}` to each class token, matching what the Babel plugin produces. SCSS and Less are supported via `postcss-scss` (bundled). Files matching `*.module.*` are skipped — they are already scoped by CSS Modules.
+**PostCSS plugin** (`@dinesh-gamage/react-scoped-css/postcss`) — walks every CSS rule selector and appends `-{hash}` to each class token, matching what the Babel plugin produces. SCSS and Less are supported via `postcss-scss` (bundled). Files matching `*.module.*` are skipped — they are already scoped by CSS Modules.
 
 **Hash** — `MD5(relativeFilePath + salt).slice(0, 8)`. The path is relative to the nearest `package.json`, so the hash is identical on every developer machine and in CI regardless of where the repo is cloned. The salt defaults to the `name` field from `package.json`, which makes hashes globally unique across different apps without any configuration.
 
@@ -259,7 +259,7 @@ Static string literals are transformed entirely at compile time — no runtime c
 **Dynamic class names set outside JSX** — `element.className = 'foo'` and `document.createElement` calls are not transformed. The Babel plugin only processes JSX `className` attributes. Workaround: use `scopeClass` from `react-scoped-css` directly:
 
 ```ts
-import { scopeClass } from 'react-scoped-css';
+import { scopeClass } from '@dinesh-gamage/react-scoped-css';
 // you need to supply the hash manually — get it from the build output
 ```
 
@@ -300,7 +300,7 @@ npm run build   # builds dist/
 src/
   babel/index.ts       JSX className transform — all 9 patterns, AST-based
   postcss/index.ts     CSS class selector transform, SCSS auto-detected
-  cli/init.ts          npx react-scoped-css init — detect bundler, print snippet
+  cli/init.ts          npx @dinesh-gamage/react-scoped-css init — detect bundler, print snippet
   adapters/
     vite.ts            Vite plugin (wires up both automatically)
     next.ts            Next.js withScopedCss() wrapper
@@ -354,14 +354,14 @@ Open an issue first for anything large (new adapters, new configuration options,
 
 ## Migrating from react-scoped-css-loader (v1)
 
-v1 (`react-scoped-css-loader`) and v2 (`react-scoped-css`) are separate packages. v1 remains on npm unchanged.
+v1 (`react-scoped-css-loader`) and v2 (`@dinesh-gamage/react-scoped-css`) are separate packages. v1 remains on npm unchanged.
 
 To migrate:
 
 ```bash
 npm uninstall react-scoped-css-loader
-npm install react-scoped-css
-npx react-scoped-css init
+npm install @dinesh-gamage/react-scoped-css
+npx @dinesh-gamage/react-scoped-css init
 ```
 
 Then replace the v1 webpack loader config with the v2 config snippet printed by `init`.
