@@ -46,6 +46,63 @@ The result: `.container` in `Card.tsx` and `.container` in `UserProfile.tsx` eac
 
 ---
 
+## File naming requirements
+
+The Babel plugin (processes `.tsx`/`.jsx`) and the PostCSS plugin (processes `.scss`/`.css`) each compute the hash independently from the file path. For class names to match, both files must produce the same hash.
+
+**Two rules:**
+
+### 1. Same filename stem
+
+`Button.tsx` must pair with `Button.scss`. The extension is stripped before hashing, so the stems must be identical.
+
+```
+Button.tsx   → hash("src/components/Button/Button" + salt)  = a3f9b2c1
+Button.scss  → hash("src/components/Button/Button" + salt)  = a3f9b2c1  ✓ match
+```
+
+```
+Button.tsx         → hash based on "Button"
+button-styles.scss → hash based on "button-styles"  ✗ different hash
+```
+
+### 2. Same directory
+
+The hash uses the full relative path (not just the filename). Files with the same name in different directories get different hashes.
+
+```
+src/components/Button/Button.tsx   → hash("src/components/Button/Button" + salt)  = a3f9b2c1
+src/components/Button/Button.scss  → hash("src/components/Button/Button" + salt)  = a3f9b2c1  ✓ match
+
+src/components/Button/Button.tsx   → a3f9b2c1
+src/styles/Button.scss             → d7e2f4b0  ✗ different path = different hash
+```
+
+Keep SCSS files co-located with their TSX files:
+
+```
+src/
+  components/
+    Button/
+      Button.tsx    ✓
+      Button.scss   ✓
+    Card/
+      Card.tsx      ✓
+      Card.scss     ✓
+```
+
+### Global/shared SCSS
+
+A `global.scss` file imported across multiple components gets the hash of `global.scss` — which won't match any TSX file. Use the `exclude` option to leave those class names unscoped:
+
+```ts
+scopedCss({ exclude: ['global-', 'shared-', 'layout-'] })
+```
+
+Any class name starting with an excluded prefix is left exactly as written in both JSX output and CSS output. This is also the mechanism for overriding component library styles (`uxp-`, `mantine-`, etc.).
+
+---
+
 ## Why not CSS Modules or CSS-in-JS?
 
 Every existing solution requires you to change how you write code:
