@@ -15,7 +15,7 @@ import { isExcluded } from '../shared/exclude';
 import type { ScopedCssOptions } from '../shared/options';
 
 const CLASSNAMES_FUNCTIONS = new Set(['classNames', 'clsx', 'cx', 'cn']);
-const SCOPE_CLASS_IMPORT = 'react-scoped-css';
+const SCOPE_CLASS_IMPORT = '@dinesh-gamage/react-scoped-css';
 
 /** Scope space-separated class names that are static strings. */
 function scopeClassString(value: string, hash: string, exclude: string[]): string {
