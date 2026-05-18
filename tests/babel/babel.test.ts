@@ -79,15 +79,15 @@ describe('Babel plugin — all 9 className patterns', () => {
         expect(staticOnly).not.toContain('import');
 
         const dynamic = transform(`const el = <div className={myClass} />;`);
-        expect(dynamic).toMatch(/from ['"]react-scoped-css['"]/);
+        expect(dynamic).toMatch(/from ['"]@dinesh-gamage\/react-scoped-css['"]/);
     });
 
     it('does not double-inject scopeClass import', () => {
         const code = `
-import { scopeClass } from 'react-scoped-css';
+import { scopeClass } from '@dinesh-gamage/react-scoped-css';
 const el = <div className={myClass} />;`;
         const out = transform(code);
-        const count = (out.match(/from 'react-scoped-css'/g) ?? []).length;
+        const count = (out.match(/from '@dinesh-gamage\/react-scoped-css'/g) ?? []).length;
         expect(count).toBe(1);
     });
 
