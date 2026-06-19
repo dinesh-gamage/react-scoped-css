@@ -17,13 +17,29 @@ import type { ScopedCssOptions } from '../shared/options';
 const CLASSNAMES_FUNCTIONS = new Set(['classNames', 'clsx', 'cx', 'cn']);
 const SCOPE_CLASS_IMPORT = '@dinesh-gamage/react-scoped-css';
 
-/** Scope space-separated class names that are static strings. */
+/**
+ * Scope space-separated class names that are static strings.
+ *
+ * Preserves leading and trailing whitespace exactly as written — critical for
+ * template-literal quasis like `"foo "` (with trailing space) where dropping
+ * the space would cause the compiled output to concatenate against `${...}`
+ * with no separator.
+ */
 function scopeClassString(value: string, hash: string, exclude: string[]): string {
-    return value
+    if (!value) return value;
+    const leadingMatch = value.match(/^\s+/);
+    const trailingMatch = value.match(/\s+$/);
+    const leading = leadingMatch ? leadingMatch[0] : '';
+    const trailing = trailingMatch ? trailingMatch[0] : '';
+    const core = value.slice(leading.length, value.length - trailing.length);
+    if (!core) return value; // whitespace-only or empty — leave unchanged
+
+    const scoped = core
         .split(/\s+/)
         .filter(Boolean)
         .map(cls => (isExcluded(cls, exclude) ? cls : `${cls}-${hash}`))
         .join(' ');
+    return leading + scoped + trailing;
 }
 
 /**
@@ -89,11 +105,10 @@ export default function reactScopedCssBabelPlugin(
         });
 
         const newExpressions = node.expressions.map(expr => {
-            if (t.isStringLiteral(expr)) {
-                return t.stringLiteral(scopeClassString(expr.value, hash, exclude));
-            }
+            // Recurse through transformExpr so nested classNames(), ternary,
+            // logical, etc. get the same treatment they'd get at the top level.
             if (t.isExpression(expr)) {
-                return buildScopeClassCall(expr);
+                return transformExpr(expr);
             }
             // TSType in template literal — leave as is
             return expr;

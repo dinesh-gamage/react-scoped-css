@@ -44,10 +44,35 @@ describe('Babel plugin — all 9 className patterns', () => {
         expect(out).toContain('scopeClass');
     });
 
+    it('4a. Template literal preserves space between static prefix and dynamic part', () => {
+        const out = transform('const el = <div className={`foo ${x}`} />;');
+        // The trailing space in the "foo " quasi must survive the transform.
+        // Without it, the runtime concatenates against scopeClass() output with no separator.
+        expect(out).toMatch(new RegExp(`\`foo-${HASH} \\$\\{`));
+    });
+
+    it('4b. Template literal preserves space between dynamic and static suffix', () => {
+        const out = transform('const el = <div className={`${x} bar`} />;');
+        expect(out).toMatch(new RegExp(`\\} bar-${HASH}\``));
+    });
+
+    it('4c. Template literal with nested classNames scopes static args inline', () => {
+        const out = transform('const el = <div className={`wrap ${classNames("foo", {"bar": x})}`} />;');
+        expect(out).toContain(`wrap-${HASH}`);
+        expect(out).toContain(`"foo-${HASH}"`);
+        expect(out).toContain(`"bar-${HASH}"`);
+        // classNames result should NOT be wrapped in scopeClass — its args are already scoped
+        expect(out).not.toContain('scopeClass(classNames');
+    });
+
     it('5. Template literal (complex expr): className={`${a ? "on" : "off"} base`}', () => {
         const out = transform('const el = <div className={`${a ? "on" : "off"} base`} />;');
         expect(out).toContain(`base-${HASH}`);
-        expect(out).toContain('scopeClass');
+        // Inner ternary has static literals — both branches scoped at compile time.
+        // No scopeClass runtime call needed since the whole expression is static.
+        expect(out).toContain(`"on-${HASH}"`);
+        expect(out).toContain(`"off-${HASH}"`);
+        expect(out).not.toContain('scopeClass');
     });
 
     it('6. Variable: className={myClass}', () => {

@@ -27,3 +27,53 @@ export function scopeClass(
         })
         .join(' ');
 }
+
+// ---------------------------------------------------------------------------
+// classNames — drop-in replacement for the `classnames` npm package
+// ---------------------------------------------------------------------------
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+type ClassValue =
+    | string
+    | number
+    | bigint
+    | boolean
+    | null
+    | undefined
+    | ClassDictionary
+    | ClassValue[];
+
+interface ClassDictionary {
+    [key: string]: any;
+}
+
+/**
+ * Build a className string from a variadic list of strings, arrays, and
+ * `{ className: condition }` objects. Mirrors the API of the `classnames`
+ * npm package so consumers can drop this in without changing call sites.
+ *
+ * The Babel plugin recognizes `classNames(...)` calls and rewrites static
+ * string arguments and string-literal object keys with the per-file hash at
+ * compile time — so authoring `classNames('foo', { bar: x })` produces the
+ * same scoped output as authoring two static strings in a ternary.
+ */
+export function classNames(...args: ClassValue[]): string {
+    const out: string[] = [];
+    for (const arg of args) {
+        if (!arg) continue;
+        const argType = typeof arg;
+        if (argType === 'string' || argType === 'number' || argType === 'bigint') {
+            out.push(String(arg));
+        } else if (Array.isArray(arg)) {
+            const inner = classNames(...arg);
+            if (inner) out.push(inner);
+        } else if (argType === 'object') {
+            const dict = arg as ClassDictionary;
+            for (const key of Object.keys(dict)) {
+                if (dict[key]) out.push(key);
+            }
+        }
+    }
+    return out.join(' ');
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */

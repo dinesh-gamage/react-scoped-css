@@ -259,6 +259,27 @@ Any class name whose string value starts with an excluded prefix is left exactly
 
 ---
 
+## Built-in `classNames` helper
+
+The package exports a `classNames` function with the same API as the `classnames` npm package — drop it in to combine conditional class names without an extra dependency.
+
+```tsx
+import { classNames } from '@dinesh-gamage/react-scoped-css';
+
+<button className={classNames(
+    'btn',
+    variant === 'primary' && 'btn--primary',
+    { 'btn--disabled': disabled, 'btn--loading': loading },
+    extraClasses,
+)} />
+```
+
+The Babel plugin recognises `classNames(...)` calls and rewrites every static string argument and string-literal object key with the per-file hash at compile time — so `'btn'`, `'btn--primary'`, `'btn--disabled'`, and `'btn--loading'` are scoped inline (zero runtime cost). Only dynamic values like `extraClasses` get wrapped with the `scopeClass()` runtime helper.
+
+`classNames`, `clsx`, `cx`, and `cn` are all recognised function names — you can use any classnames-compatible utility (or this built-in one) interchangeably.
+
+---
+
 ## Configuration
 
 ```ts
@@ -322,8 +343,6 @@ import { scopeClass } from '@dinesh-gamage/react-scoped-css';
 
 For most React codebases this is not an issue.
 
-**Template literals with nested `classNames()` calls** — `` className={`wrapper ${classNames({active: x})}`} `` — the outer template literal is processed but the inner `classNames()` call is not recursively transformed. Workaround: move the `classNames()` call outside the template literal.
-
 **Third-party components that accept `className`** — A library component that uses your scoped class name internally (not just forwards it to a DOM element) may not match your CSS. The `exclude` list handles top-level library class names. Internal library classes are unaffected.
 
 **React compiler (experimental)** — Untested with the React 19 compiler. The Babel plugin runs before the React compiler in the standard pipeline, but verify in your specific setup.
@@ -338,7 +357,6 @@ Contributions are welcome. Here is what the project needs most:
 - **Less support** — `postcss-less` is not yet bundled; `.less` files are not auto-detected in the PostCSS plugin
 - **React 19 / React compiler verification** — the Babel plugin is untested with the React compiler; someone with a React 19 + compiler project should validate it
 - **Rollup adapter** — `src/adapters/rollup.ts` following the same pattern as the Vite adapter
-- **Nested `classNames()` inside template literals** — known limitation, see [Known limitations](#known-limitations)
 - **Bug reports with minimal reproductions** — open an issue with the smallest possible code that shows the problem
 
 ### Setup
