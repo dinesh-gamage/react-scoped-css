@@ -1,6 +1,6 @@
 {
   "name": "@dinesh-gamage/react-scoped-css",
-  "version": "2.0.3",
+  "version": "2.0.3", 
   "description": "Zero-code-change CSS scoping for React — no className renames, no new syntax",
   "license": "MIT",
   "author": "dinesh-gamage",
